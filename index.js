@@ -24,15 +24,23 @@ app.get("/api/:date?", function(req, res) {
     const date = req.params.date;
     const regex = /^[0-9]+$/;
     var isUnix = regex.test(date);
-    if (!isUnix) {
-        var unix = Date.parse(date);
-        var utc = new Date(unix).toUTCString()
-    } else {
-        var unix = parseInt(date);
+    var isNan = isNaN(Date.parse(date));
+    if (date == null) {
+        var unix = new Date().getTime();
         var utc = new Date(unix).toUTCString();
+    } else if (isNan && !isUnix) {
+        res.json({ error: "Invalid Date" });
+    } else {
+        if (!isUnix) {
+            var unix = Date.parse(date);
+            var utc = new Date(unix).toUTCString()
+        } else {
+            var unix = parseInt(date);
+            var utc = new Date(unix).toUTCString();
+        }
     }
     res.json({ 'unix': unix, 'utc': utc });
-});
+})
 
 
 
